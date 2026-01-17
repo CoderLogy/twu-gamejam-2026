@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TrashPile : MonoBehaviour
@@ -14,6 +15,7 @@ public class TrashPile : MonoBehaviour
         if (trashAmount <= 0)
         {
             trashAmount = 0;
+            SceneManager.LoadSceneAsync("GameOver");
         }
 
         healthSlider.fillAmount = trashAmount / 100f;
