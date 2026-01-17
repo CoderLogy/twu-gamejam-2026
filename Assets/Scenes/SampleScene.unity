@@ -306,9 +306,9 @@ MonoBehaviour:
   target: {fileID: 755388445}
   pitch: 45
   yaw: 180
-  distance: 3
-  sensistivityX: 5
-  sensistivityY: 1
+  distance: 6
+  sensitivity: {x: 500, y: 300}
+  deadZone: {x: 0.1, y: 0.1}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
