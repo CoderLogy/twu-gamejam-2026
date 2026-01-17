@@ -24,12 +24,28 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
+        UpdateDirection();
+
         // Set the player's velocity to the inputted movement
         rb.linearVelocity = new Vector3(
             movement.x,
             0,
             movement.y
         );
+    }
+
+    void UpdateDirection()
+    {
+        Ray mouseRay = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit hitInfo;
+
+        if (Physics.Raycast(mouseRay, out hitInfo))
+        {
+            Vector3 direction = hitInfo.point - transform.position;
+            direction.y = 0;
+
+            transform.rotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+        }
     }
 
 }
