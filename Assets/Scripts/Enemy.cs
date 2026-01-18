@@ -1,27 +1,34 @@
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.UI;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] float speed = 3;
     [SerializeField] Vector3 target = Vector3.zero;
-    [SerializeField] string bulletTag = "Bullet";
     [SerializeField] string trashTag = "TrashPile";
     [SerializeField] float gameEdge = 50;
     [SerializeField] GameObject trashDisplay;
     [SerializeField] GameObject droppedTrashPrefab;
-    [SerializeField] int health = 4;
+    [SerializeField] int maxHealth = 4;
     [SerializeField] GameObject droppedPowerUpsPrefab;
     [SerializeField] float dropChance = 0.5f;
+    [SerializeField] Image healthSlider;
 
     private float trashAmount = 0;
+    private float health;
 
-    private Rigidbody rb;
+    NavMeshAgent agent;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        agent = GetComponent<NavMeshAgent>();
+        agent.SetDestination(target);
         trashDisplay.SetActive(false);
+        health = maxHealth;
+
+        // Hard coded, I know. IDK right now
+        healthSlider.transform.parent.parent.gameObject.SetActive(false);
     }
 
     void Update()
@@ -36,42 +43,44 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    public void TakeDamage(float amount)
     {
-        // Get the direction to the target (trash)
-        Vector3 toTarget = target - transform.position;
-        toTarget.y = 0;
-        
-        // Look and move towards the target
-        transform.rotation = Quaternion.LookRotation(toTarget.normalized, Vector3.up);
-        rb.linearVelocity = toTarget.normalized * speed;
+        health -= amount;
+        // Hard coded, I know. IDK right now
+        healthSlider.transform.parent.parent.gameObject.SetActive(health < maxHealth);
+        healthSlider.fillAmount = ((float) health) / maxHealth;
+
+        if (health <= 0)
+        {
+            Die();
+        }
     }
 
-    void OnCollisionEnter(Collision collision)
+    void Die()
     {
-        if (collision.gameObject.tag.Equals(bulletTag))
+        if (trashAmount != 0)
         {
-            if (trashAmount != 0)
-            {
-                Instantiate(droppedTrashPrefab, transform.position, transform.rotation);
-            }
-            health -= 1;
-            if (health <= 0)
-            {
-                if (Random.value <= dropChance)
-                {
-                    Instantiate(droppedPowerUpsPrefab, transform.position, transform.rotation);
-                }
-                Destroy(gameObject);
-            }
+            Instantiate(droppedTrashPrefab, transform.position, transform.rotation);
         }
+
+        if (Random.value <= dropChance)
+        {
+            Instantiate(droppedPowerUpsPrefab, transform.position, transform.rotation);
+        }
+
+        Destroy(gameObject);
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == trashTag)
         {
-            target = (transform.position - target).normalized * 100;
+            // Just go away
+            Vector3 newTarget = (transform.position - target).normalized * 60;
+            newTarget.y = 0;
+            Debug.Log(newTarget);
+
+            agent.SetDestination(newTarget);
             
             TrashPile pile = other.GetComponent<TrashPile>();
             
