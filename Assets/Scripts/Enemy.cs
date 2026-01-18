@@ -1,20 +1,22 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Enemy : MonoBehaviour
 {
     [SerializeField] float speed = 3;
     [SerializeField] Vector3 target = Vector3.zero;
-    [SerializeField] string bulletTag = "Bullet";
     [SerializeField] string trashTag = "TrashPile";
     [SerializeField] float gameEdge = 50;
     [SerializeField] GameObject trashDisplay;
     [SerializeField] GameObject droppedTrashPrefab;
-    [SerializeField] int health = 4;
+    [SerializeField] int maxHealth = 4;
     [SerializeField] GameObject droppedPowerUpsPrefab;
     [SerializeField] float dropChance = 0.5f;
+    [SerializeField] Image healthSlider;
 
     private float trashAmount = 0;
+    private float health;
 
     private Rigidbody rb;
 
@@ -22,6 +24,10 @@ public class Enemy : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         trashDisplay.SetActive(false);
+        health = maxHealth;
+
+        // Hard coded, I know. IDK right now
+        healthSlider.transform.parent.parent.gameObject.SetActive(false);
     }
 
     void Update()
@@ -47,24 +53,32 @@ public class Enemy : MonoBehaviour
         rb.linearVelocity = toTarget.normalized * speed;
     }
 
-    void OnCollisionEnter(Collision collision)
+    public void TakeDamage(float amount)
     {
-        if (collision.gameObject.tag.Equals(bulletTag))
+        health -= amount;
+        // Hard coded, I know. IDK right now
+        healthSlider.transform.parent.parent.gameObject.SetActive(health < maxHealth);
+        healthSlider.fillAmount = ((float) health) / maxHealth;
+
+        if (health <= 0)
         {
-            if (trashAmount != 0)
-            {
-                Instantiate(droppedTrashPrefab, transform.position, transform.rotation);
-            }
-            health -= 1;
-            if (health <= 0)
-            {
-                if (Random.value <= dropChance)
-                {
-                    Instantiate(droppedPowerUpsPrefab, transform.position, transform.rotation);
-                }
-                Destroy(gameObject);
-            }
+            Die();
         }
+    }
+
+    void Die()
+    {
+        if (trashAmount != 0)
+        {
+            Instantiate(droppedTrashPrefab, transform.position, transform.rotation);
+        }
+
+        if (Random.value <= dropChance)
+        {
+            Instantiate(droppedPowerUpsPrefab, transform.position, transform.rotation);
+        }
+
+        Destroy(gameObject);
     }
 
     void OnTriggerEnter(Collider other)
