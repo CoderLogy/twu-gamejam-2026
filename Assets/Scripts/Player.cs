@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
     public void OnShoot()
     {
         // We only want to shoot when the shoot button is pressed
-        if (!context.performed) return;
+        //if (!context.performed) return;
 
         // Shoot a bullet and start the reload timer where the player can't shoot again until the timer is up
        
