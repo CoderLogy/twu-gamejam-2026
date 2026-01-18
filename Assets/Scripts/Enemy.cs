@@ -1,10 +1,10 @@
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] float speed = 3;
     [SerializeField] Vector3 target = Vector3.zero;
     [SerializeField] string trashTag = "TrashPile";
     [SerializeField] float gameEdge = 50;
@@ -18,11 +18,12 @@ public class Enemy : MonoBehaviour
     private float trashAmount = 0;
     private float health;
 
-    private Rigidbody rb;
+    NavMeshAgent agent;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        agent = GetComponent<NavMeshAgent>();
+        agent.SetDestination(target);
         trashDisplay.SetActive(false);
         health = maxHealth;
 
@@ -40,17 +41,6 @@ public class Enemy : MonoBehaviour
             }
             Destroy(gameObject);
         }
-    }
-
-    void FixedUpdate()
-    {
-        // Get the direction to the target (trash)
-        Vector3 toTarget = target - transform.position;
-        toTarget.y = 0;
-        
-        // Look and move towards the target
-        transform.rotation = Quaternion.LookRotation(toTarget.normalized, Vector3.up);
-        rb.linearVelocity = toTarget.normalized * speed;
     }
 
     public void TakeDamage(float amount)
@@ -85,7 +75,12 @@ public class Enemy : MonoBehaviour
     {
         if (other.tag == trashTag)
         {
-            target = (transform.position - target).normalized * 100;
+            // Just go away
+            Vector3 newTarget = (transform.position - target).normalized * 60;
+            newTarget.y = 0;
+            Debug.Log(newTarget);
+
+            agent.SetDestination(newTarget);
             
             TrashPile pile = other.GetComponent<TrashPile>();
             
