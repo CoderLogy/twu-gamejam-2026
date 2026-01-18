@@ -7,11 +7,12 @@ TagManager:
   - Floor
   - Bullet
   - TrashPile
+  - Enemy
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Trash
   - Water
   - UI
   - 
