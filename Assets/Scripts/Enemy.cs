@@ -28,6 +28,10 @@ public class Enemy : MonoBehaviour
     {
         if (transform.position.sqrMagnitude > gameEdge * gameEdge)
         {
+            if(trashAmount > 0)
+            {
+                Debug.Log($"Lost Trash: {trashAmount}");
+            }
             Destroy(gameObject);
         }
     }

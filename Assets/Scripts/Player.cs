@@ -125,6 +125,7 @@ public class Player : MonoBehaviour
         {
             Destroy(other.gameObject);
             heldTrash += 1;
+            Debug.Log(heldTrash);
         }
 
         if (other.tag == trashPileTag)
