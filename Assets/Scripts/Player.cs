@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
 
     [SerializeField] float speed = 10;
     private bool isSpeedBoosted = false;
-    [SerializeField] float boostedSpeed = 30;
+    [SerializeField] float boostedSpeed = 20;
     [SerializeField] GameObject bulletPrefab;
     [SerializeField] Transform bulletSpawn;
 
@@ -142,7 +142,7 @@ public class Player : MonoBehaviour
         if ((trashLayer.value & (1 << other.gameObject.layer)) != 0)
         {
             Destroy(other.gameObject);
-            heldTrash += 1;
+            heldTrash += 9;
             Debug.Log(heldTrash);
         }
 
